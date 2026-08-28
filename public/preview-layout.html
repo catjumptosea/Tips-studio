@@ -1,0 +1,1357 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>提示词工作台 · 布局预览</title>
+    <style>
+      :root {
+        --bg: #f4f6f5;
+        --surface: #ffffff;
+        --surface-2: #f6f8f7;
+        --surface-3: #eef3f0;
+        --line: #dfe6e3;
+        --line-strong: #cbd5d1;
+        --text: #17211d;
+        --text-soft: #45564f;
+        --muted: #7b8b84;
+        --accent: #1f7a5a;
+        --accent-strong: #125f44;
+        --accent-soft: #e5f5ee;
+        --danger: #b42318;
+        --danger-soft: #fdeceb;
+        --warning: #b54708;
+        --warning-soft: #fdf3e7;
+        --info: #155eef;
+        --info-soft: #ebf1fe;
+        --radius: 8px;
+        --shadow: 0 8px 24px rgba(23, 33, 29, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          "Segoe UI",
+          "Microsoft YaHei",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      p,
+      h1,
+      h2,
+      h3,
+      ul {
+        margin: 0;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .page-shell {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mock-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 20px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+      }
+      .brand-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+      .brand-title {
+        font-size: 16px;
+        font-weight: 800;
+      }
+      .brand-version {
+        margin-left: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .header-note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .demo-layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr) 240px;
+        gap: 14px;
+        padding: 14px;
+        max-width: 1560px;
+        width: 100%;
+        margin: 0 auto;
+        align-items: start;
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .left-panel,
+      .right-panel {
+        padding: 12px;
+        align-self: start;
+      }
+      .left-panel {
+        position: sticky;
+        top: 14px;
+      }
+      .right-panel {
+        position: sticky;
+        top: 76px;
+      }
+
+      .section-title {
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 3px;
+      }
+      .section-subtitle {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+
+      .category-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-top: 2px;
+      }
+      .category-button {
+        text-align: left;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        background: transparent;
+        padding: 9px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .category-button:hover {
+        background: var(--surface-2);
+      }
+      .category-button.active {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+      .category-name {
+        font-weight: 750;
+        font-size: 13px;
+        color: var(--text);
+      }
+      .category-meta {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .composer-panel {
+        padding: 16px;
+      }
+      .composer-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .composer-title {
+        font-size: 18px;
+        font-weight: 850;
+      }
+      .composer-desc {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 2px;
+      }
+      .component-badge {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 12px;
+        color: var(--accent-strong);
+        background: var(--surface-2);
+      }
+
+      .preview-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+        gap: 12px;
+      }
+
+      .mock-area {
+        min-height: 382px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(var(--bg) 0 1px, transparent 1px) 0 0 / 22px 22px,
+          linear-gradient(90deg, var(--bg) 0 1px, transparent 1px) 0 0 / 22px 22px,
+          var(--surface);
+        padding: 18px;
+      }
+      .mock-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .mock-toolbar .chip {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .mock-stage {
+        min-height: 320px;
+        display: grid;
+        place-items: center;
+        border: 1px dashed var(--line-strong);
+        border-radius: 7px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.74);
+        overflow: hidden;
+      }
+      .segmented {
+        display: inline-flex;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        padding: 2px;
+        gap: 2px;
+      }
+      .segmented button {
+        border: 0;
+        background: transparent;
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 12px;
+        color: var(--text-soft);
+      }
+      .segmented button.active {
+        background: var(--accent);
+        color: #fff;
+        font-weight: 700;
+      }
+
+      .mock-view {
+        min-height: 320px;
+        display: grid;
+        place-items: center;
+        border: 1px dashed var(--line-strong);
+        border-radius: 7px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.74);
+        overflow: hidden;
+      }
+      .mock-frame {
+        width: 100%;
+        max-width: 430px;
+        border-radius: 7px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .ui-browser-bar {
+        background: var(--surface-3);
+        padding: 7px 12px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .ui-page {
+        height: 240px;
+        padding: 16px;
+        color: var(--text-soft);
+        font-size: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .ui-page-title {
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .ui-sidebar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 11px;
+        margin-top: 4px;
+      }
+
+      .mock-dialog {
+        width: 330px;
+        background: var(--surface);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+      }
+      .dialog-body {
+        padding: 16px 16px 12px;
+      }
+      .dialog-title {
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .dialog-copy {
+        color: var(--text-soft);
+        font-size: 12px;
+        margin-top: 6px;
+        line-height: 1.5;
+      }
+      .dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 10px 16px;
+        border-top: 1px solid var(--line);
+      }
+      .btn {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 12px;
+        padding: 6px 12px;
+        font-weight: 700;
+      }
+      .btn-primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .btn-danger {
+        background: var(--danger);
+        border-color: var(--danger);
+        color: #fff;
+      }
+
+      .tooltip-demo {
+        width: 300px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: var(--surface);
+      }
+      .tooltip-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--text-soft);
+        font-size: 12px;
+        margin-bottom: 20px;
+      }
+      .tooltip-bubble {
+        border-radius: 7px;
+        background: var(--text);
+        color: #fff;
+        padding: 7px 10px;
+        font-size: 11px;
+        margin-left: 8px;
+      }
+
+      .form-demo {
+        width: 100%;
+        max-width: 330px;
+        padding: 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 7px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 12px;
+      }
+      .field-label-text {
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .input {
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        height: 34px;
+        padding: 0 10px;
+        font-size: 12px;
+        color: var(--text);
+      }
+      .input::placeholder {
+        color: var(--muted);
+      }
+      .form-note {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .validation-demo .input {
+        border-color: var(--danger);
+      }
+      .error-text {
+        color: var(--danger);
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .toast-demo {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 220px;
+      }
+      .toast-card {
+        position: absolute;
+        right: 10px;
+        bottom: 12px;
+        max-width: 280px;
+        background: var(--text);
+        color: #fff;
+        border-radius: 7px;
+        padding: 9px 12px;
+        font-size: 12px;
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .empty-demo {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+        padding: 26px 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+      }
+      .empty-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--surface-3);
+        color: var(--accent-strong);
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        margin: 0 auto 8px;
+      }
+      .empty-title {
+        font-weight: 800;
+        font-size: 13px;
+      }
+      .empty-copy {
+        color: var(--muted);
+        font-size: 12px;
+        margin: 5px 0 12px;
+      }
+
+      .onboarding-demo {
+        width: 100%;
+        max-width: 330px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        position: relative;
+        padding: 16px;
+      }
+      .coach-tip {
+        width: 210px;
+        background: var(--text);
+        color: #fff;
+        border-radius: 8px;
+        padding: 11px 12px;
+        font-size: 12px;
+        position: absolute;
+        right: 16px;
+        top: -42px;
+        box-shadow: var(--shadow);
+      }
+      .coach-title {
+        font-weight: 800;
+        color: var(--text);
+        font-size: 13px;
+      }
+      .coach-row {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 7px;
+      }
+
+      .loading-demo {
+        width: 100%;
+        max-width: 320px;
+      }
+      .progress-track {
+        height: 7px;
+        border-radius: 999px;
+        background: var(--line);
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 68%;
+        border-radius: inherit;
+        background: var(--accent);
+      }
+      .loading-copy {
+        color: var(--text-soft);
+        font-size: 12px;
+        margin: 8px 0 14px;
+      }
+
+      .permission-demo {
+        width: 100%;
+        max-width: 340px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .permission-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+      }
+      .permission-body {
+        padding: 12px 14px;
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .feature-name-demo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .feature-name-chip {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface);
+        padding: 7px 11px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-soft);
+      }
+      .feature-name-chip.accent {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+      }
+
+      .feature-intro-demo {
+        width: 100%;
+        max-width: 340px;
+      }
+      .intro-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: var(--surface);
+      }
+      .intro-title {
+        font-weight: 850;
+        font-size: 14px;
+      }
+      .intro-summary {
+        color: var(--text-soft);
+        font-size: 12px;
+        margin: 6px 0 12px;
+        line-height: 1.5;
+      }
+
+      .reference-panel {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .reference-block {
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+      }
+      .reference-block:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .reference-title {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 800;
+        margin-bottom: 5px;
+      }
+      .reference-copy {
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .reference-list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .reference-list li {
+        position: relative;
+        padding-left: 11px;
+      }
+      .reference-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 6px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--line-strong);
+      }
+
+      .result-panel {
+        padding: 16px;
+        margin-top: 14px;
+      }
+      .result-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .result-title {
+        font-size: 16px;
+        font-weight: 850;
+      }
+      .result-subtitle {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 3px;
+      }
+      .result-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+      .result-tab {
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--text-soft);
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+      .result-tab.active {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+        font-weight: 750;
+      }
+      .result-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .language-block {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 12px;
+        background: var(--surface-2);
+      }
+      .language-head {
+        color: var(--muted);
+        font-size: 11px;
+        margin-bottom: 6px;
+        font-weight: 700;
+      }
+      .language-copy {
+        color: var(--text);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .right-panel .history-empty {
+        color: var(--muted);
+        font-size: 12px;
+        padding: 20px 4px;
+      }
+      .history-row {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 8px;
+        background: var(--surface);
+      }
+      .history-type {
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .history-copy {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.4;
+        margin-top: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .composer-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .generate-button,
+      .query-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 7px;
+        padding: 8px 12px;
+        font-size: 13px;
+        font-weight: 750;
+      }
+      .generate-button {
+        background: var(--accent);
+        color: #fff;
+        border: 1px solid var(--accent);
+      }
+      .query-button {
+        background: var(--surface);
+        color: var(--text-soft);
+        border: 1px solid var(--line);
+      }
+
+      .mode-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 12px 0 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .mode-chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--text-soft);
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+      .mode-chip.active {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+      }
+
+      @media (max-width: 1180px) {
+        .demo-layout {
+          grid-template-columns: 230px minmax(0, 1fr);
+        }
+        .right-panel {
+          grid-column: 1 / -1;
+          position: static;
+        }
+        .history-list-mock {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 8px;
+        }
+      }
+      @media (max-width: 800px) {
+        .demo-layout {
+          grid-template-columns: 1fr;
+        }
+        .left-panel {
+          position: static;
+        }
+        .preview-stage {
+          grid-template-columns: 1fr;
+        }
+        .result-content {
+          grid-template-columns: 1fr;
+        }
+        .mock-header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mock-header">
+      <div class="brand-row">
+        <div class="brand-mark">T</div>
+        <div>
+          <div class="brand-title">
+            Tips Studio <span class="brand-version">v2.0 预览</span>
+          </div>
+          <div class="brand-subtitle" style="color: var(--muted); font-size: 12px">
+            提示词类型 + 模拟效果 + 结果联动
+          </div>
+        </div>
+      </div>
+      <div class="header-note">这是一个静态交互稿，用来验证界面布局。</div>
+    </div>
+
+    <div class="demo-layout">
+      <aside class="left-panel panel">
+        <div class="section-title">提示词类型</div>
+        <div class="section-subtitle">选择类型切换下方预览</div>
+        <div class="category-list" id="categoryList"></div>
+      </aside>
+
+      <main>
+        <section class="composer-panel panel">
+          <div class="composer-head">
+            <div>
+              <div class="composer-title" id="composerTitle">确认阻断 / Dialog</div>
+              <div class="composer-desc" id="composerDesc">删除、支付、退出等高风险或不可逆操作前的二次确认</div>
+            </div>
+            <span class="component-badge" id="componentBadge">Dialog / Confirm Modal</span>
+          </div>
+
+          <div class="mode-row">
+            <span>输出长度</span>
+            <div class="result-tabs">
+              <button class="mode-chip active" type="button">短句</button>
+              <button class="mode-chip" type="button">长句</button>
+              <button class="mode-chip" type="button">段落</button>
+            </div>
+          </div>
+
+          <div class="preview-stage">
+            <div class="mock-area">
+              <div class="mock-toolbar">
+                <span class="chip" id="mockLabel">选中类型 · 实时预览</span>
+                <div class="segmented" id="viewToggle">
+                  <button type="button" class="active" data-view="preview">模拟效果</button>
+                  <button type="button" data-view="text">参考说明</button>
+                </div>
+              </div>
+              <div class="mock-stage" id="mockStage"></div>
+            </div>
+
+            <section class="reference-panel panel" id="referencePanel">
+              <div class="reference-block">
+                <div class="reference-title">参考示例</div>
+                <ul class="reference-list" id="exampleList"></ul>
+              </div>
+              <div class="reference-block">
+                <div class="reference-title">类型说明</div>
+                <p class="reference-copy" id="purposeText"></p>
+                <ul class="reference-list" id="rulesList"></ul>
+              </div>
+              <div class="reference-block">
+                <div class="reference-title">语气要求</div>
+                <p class="reference-copy">专业、中立、客观的陈述风格</p>
+                <ul class="reference-list" id="toneList"></ul>
+              </div>
+            </section>
+          </div>
+
+          <div class="composer-actions">
+            <button type="button" class="generate-button" id="generateBtn">生成双语提示词</button>
+            <button type="button" class="query-button">查询现有词条</button>
+            <button type="button" class="query-button" id="simulateBtn">模拟生成结果</button>
+          </div>
+        </section>
+
+        <section class="result-panel panel">
+          <div class="result-head">
+            <div>
+              <div class="result-title">双语提示词</div>
+              <div class="result-subtitle">生成结果会同步进入上方模拟器预览</div>
+            </div>
+            <div class="result-tabs" id="resultTabs">
+              <button type="button" class="result-tab active">短句</button>
+              <button type="button" class="result-tab">长句</button>
+              <button type="button" class="result-tab">段落</button>
+              <button type="button" class="result-tab">原始结果</button>
+            </div>
+          </div>
+          <div class="result-content">
+            <div class="language-block">
+              <div class="language-head">中文提示词</div>
+              <div class="language-copy" id="zhPreview">确定要删除该文件吗？删除后无法恢复。</div>
+            </div>
+            <div class="language-block">
+              <div class="language-head">English prompt</div>
+              <div class="language-copy" id="enPreview">
+                Are you sure you want to delete this file? You cannot undo this action.
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="right-panel panel">
+        <div class="section-title">历史记录</div>
+        <div class="section-subtitle">右侧栏保持不变</div>
+        <div class="history-list-mock" id="historyList"></div>
+      </aside>
+    </div>
+
+    <script>
+      const categories = [
+        {
+          id: "dialog",
+          label: "确认阻断 / Dialog",
+          component: "Dialog / Confirm Modal",
+          description: "删除、支付、退出等高风险或不可逆操作前的二次确认",
+          purpose: "二次确认，防止误操作",
+          rules: ["标题点明操作，正文说清后果", "按钮用动词，如删除、取消", "警告类需用醒目的警示样式"],
+          examples: ["确定要删除该文件吗？删除后无法恢复。", "当前内容尚未保存，是否退出？"],
+        },
+        {
+          id: "tooltip",
+          label: "工具提示 / 悬浮提示",
+          component: "Tooltip",
+          description: "鼠标悬停在图标、按钮、缩写文字上时的补充说明",
+          purpose: "补充说明，降低认知成本",
+          rules: ["控制在 10 字以内，一句话说清", "解释是什么，而非怎么操作", "避免重复已有文本信息"],
+          examples: ["悬停到分享图标：分享到社交平台", "悬停到 VIP：高级会员标识"],
+        },
+        {
+          id: "label",
+          label: "表单标签 / Label",
+          component: "Form Label",
+          description: "输入框、复选、下拉等表单控件前面的说明文字",
+          purpose: "告知用户需要输入或选择什么，并辅助无障碍访问",
+          rules: ["用名词或名词短语，简短直接", "保持同级字段标签长度一致", "避免歧义表达"],
+          examples: ["姓名", "收货地址", "性别"],
+        },
+        {
+          id: "placeholder",
+          label: "占位符提示",
+          component: "Input Placeholder",
+          description: "输入框和搜索栏中作为默认文字出现的引导",
+          purpose: "提供格式示例或操作引导",
+          rules: ["提供具体示例而非抽象描述", "使用请输入或如：帮助用户", "获得焦点后通常应消失"],
+          examples: ["请输入手机号码", "搜索关键词，如：年终总结"],
+        },
+        {
+          id: "validation",
+          label: "校验 / 报错提示",
+          component: "Field Error",
+          description: "表单提交或实时校验出错时紧贴字段出现的提示",
+          purpose: "指出错误并告知如何修正",
+          rules: ["说明哪个字段、什么错误、怎么改", "语言友好，不指责用户", "错误原因在前，解决方案在后"],
+          examples: ["密码长度需要 6-20 位", "邮箱格式不正确，请重新输入"],
+        },
+        {
+          id: "toast",
+          label: "操作反馈 / Toast",
+          component: "Toast / Snackbar",
+          description: "用户完成操作后的轻量反馈，短暂出现后消失",
+          purpose: "告知操作结果，无需打断用户",
+          rules: ["控制在 15 字以内，一瞥即懂", "成功用动词，失败用原因和建议", "避免用完成后二字重复描述"],
+          examples: ["保存成功", "已复制到剪贴板", "网络连接失败，请稍后重试"],
+        },
+        {
+          id: "empty",
+          label: "空状态提示",
+          component: "Empty State",
+          description: "列表、消息中心、搜索结果等为空时的引导",
+          purpose: "解释当前状态并引导下一步",
+          rules: ["第一句说明这是哪里，第二句单步引导", "鼓励类可用轻松语气", "尽量提供行动按钮"],
+          examples: ["这里还没有内容，快去发布第一条动态吧", "购物车还是空的，去逛逛吧"],
+        },
+        {
+          id: "onboarding",
+          label: "引导提示 / 功能教学",
+          component: "Coach Mark / Onboarding",
+          description: "新功能上线、首次进入页面时的气泡或卡片引导",
+          purpose: "教育用户，降低学习成本",
+          rules: ["每一步只教一个操作，不超过 2 句话", "用动词开头，明确指出位置", "提供跳过或我知道了出口"],
+          examples: ["点击这里可以切换视图模式", "长按消息可以撤回或删除"],
+        },
+        {
+          id: "loading",
+          label: "加载与进度提示",
+          component: "Loading / Progress",
+          description: "数据请求、上传、跳转等待时告知系统状态",
+          purpose: "告知系统正在处理，安抚等待情绪",
+          rules: ["说清楚正在做什么，不只有加载中", "超过 3 秒可用进度或预估时间", "省略号不超过三个点"],
+          examples: ["正在生成预览…", "上传进度 68%"],
+        },
+        {
+          id: "permissions",
+          label: "系统权限与合规提示",
+          component: "Permission / Consent",
+          description: "请求摄像头、定位、通知权限，或展示隐私政策、Cookie 声明",
+          purpose: "满足合规要求，降低用户隐私顾虑",
+          rules: ["先说明用途再请求权限", "法律术语要通俗化", "拒绝后不重复打扰用户"],
+          examples: ["允许访问你的位置信息吗？位置仅用于打卡。", "我们更新了隐私政策，请查看。"],
+        },
+        {
+          id: "feature-name",
+          label: "功能名称",
+          component: "Button / Menu Label",
+          description: "功能模块、按钮、菜单项的名字",
+          purpose: "让用户一眼理解功能，并符合行业惯例",
+          rules: ["优先使用行业标准词汇", "一个名称只表达一个核心功能", "同类功能命名风格统一"],
+          examples: ["收藏夹", "订单管理", "消息中心"],
+        },
+        {
+          id: "feature-intro",
+          label: "功能介绍",
+          component: "Feature Copy",
+          description: "新功能介绍页、功能卡片、帮助文档的说明文字",
+          purpose: "用一句话清晰传达核心功能并分层表达",
+          rules: ["支持短句、长句、段落三种长度", "信息逐层递进", "不用技术黑话"],
+          examples: ["自动保存草稿", "编辑时自动保存，断电或关闭页面也不丢失内容"],
+        },
+      ];
+
+      const generated = {
+        dialog: {
+          zh: "确定要永久删除该文件吗？删除后无法恢复。",
+          en: "Are you sure you want to permanently delete this file? You cannot recover it after deletion.",
+        },
+        tooltip: {
+          zh: "分享到社交平台",
+          en: "Share to social platforms",
+        },
+        label: {
+          zh: "项目名称",
+          en: "Project name",
+        },
+        placeholder: {
+          zh: "请输入项目名称",
+          en: "Enter project name",
+        },
+        validation: {
+          zh: "密码至少 8 位，且包含大小写字母和数字",
+          en: "Password must be at least 8 characters and include uppercase, lowercase and numbers",
+        },
+        toast: {
+          zh: "设置已保存",
+          en: "Settings saved",
+        },
+        empty: {
+          zh: "暂无最近项目，点击新建开始",
+          en: "No recent projects yet. Create one to get started.",
+        },
+        onboarding: {
+          zh: "点击右上角按钮切换视图模式",
+          en: "Click the button at the top right to switch view modes",
+        },
+        loading: {
+          zh: "正在备份当前项目，请稍候…",
+          en: "Backing up your project. One moment…",
+        },
+        permissions: {
+          zh: "允许“文档助手”访问你的位置吗？位置仅用于打卡",
+          en: "Allow Document Assistant to access your location? Location is used only for check-in",
+        },
+        "feature-name": {
+          zh: "消息中心",
+          en: "Message Center",
+        },
+        "feature-intro": {
+          zh: "自动保存草稿，断电或意外关闭也不会丢失内容。",
+          en: "Drafts are saved automatically, so you never lose work after a crash or unexpected close.",
+        },
+      };
+
+      const mockRenderers = {
+        dialog: (text) => `
+          <div class="mock-dialog">
+            <div class="dialog-body">
+              <div class="dialog-title">确认操作</div>
+              <div class="dialog-copy">${text || "确定要永久删除该文件吗？删除后无法恢复。"}</div>
+            </div>
+            <div class="dialog-actions">
+              <button class="btn">取消</button>
+              <button class="btn btn-danger">删除</button>
+            </div>
+          </div>`,
+        tooltip: (text) => `
+          <div class="tooltip-demo">
+            <div class="tooltip-line">
+              <span>分享给同事或好友</span>
+              <span class="tooltip-bubble">${text || "分享到社交平台"}</span>
+            </div>
+            <div style="color: var(--muted); font-size: 11px">鼠标悬停在图标或按钮上方时出现气泡，解释功能含义。</div>
+          </div>`,
+        label: (text) => `
+          <div class="form-demo">
+            <div class="field">
+              <label class="field-label">项目名称</label>
+              <div class="input"></div>
+            </div>
+            <div class="field">
+              <label class="field-label">负责人</label>
+              <div class="input"></div>
+            </div>
+          </div>`,
+        placeholder: (text) => `
+          <div class="form-demo">
+            <label class="field-label">搜索</label>
+            <div class="input" style="width:100%">${text || "请输入项目名称"}</div>
+            <div class="form-note" style="margin-top:8px">占位符在输入框获得焦点或输入后通常会消失。</div>
+          </div>`,
+        validation: (text) => `
+          <div class="form-demo validation-demo">
+            <div class="field">
+              <label class="field-label">密码</label>
+              <div class="input">Abc123</div>
+            </div>
+            <div class="error-text">${text || "密码至少 8 位，请包含大小写和数字"}</div>
+          </div>`,
+        toast: (text) => `
+          <div class="toast-demo">
+            <div class="ui-page">
+              <div class="ui-page-title">项目设置</div>
+              <div style="color: var(--muted)">页面主体内容。</div>
+            </div>
+            <div class="toast-card">${text || "设置已保存"}</div>
+          </div>`,
+        empty: (text) => `
+          <div class="empty-demo">
+            <div class="empty-mark">+</div>
+            <div class="empty-title">暂无项目</div>
+            <div class="empty-copy">${text || "暂无最近项目，点击新建开始"}</div>
+            <button class="btn btn-primary">新建项目</button>
+          </div>`,
+        onboarding: (text) => `
+          <div class="onboarding-demo">
+            <div class="coach-tip">${text || "点击右上角按钮，开始模式设置"}</div>
+            <div class="coach-title">事项清单</div>
+            <div style="color: var(--muted); font-size: 12px; margin-top: 6px">新建事项、标记完成、筛选视图。</div>
+            <div class="coach-row">
+              <button class="btn">跳过</button>
+              <button class="btn btn-primary">知道了</button>
+            </div>
+          </div>`,
+        loading: (text) => `
+          <div class="loading-demo">
+            <div style="margin-bottom:10px; font-weight:800; font-size:13px">正在处理</div>
+            <div class="progress-track"><div class="progress-fill"></div></div>
+            <div class="loading-copy">${text || "正在备份当前项目，请稍候…"} <span style="color: var(--muted)">68%</span></div>
+            <div style="color: var(--muted); font-size: 11px">超过 3 秒建议提供进度或剩余时间。</div>
+          </div>`,
+        permissions: (text) => `
+          <div class="permission-demo">
+            <div class="permission-head">
+              <div class="brand-mark" style="background: var(--info); width: 28px; height: 28px">p</div>
+              <div style="font-weight:800; font-size:13px">权限请求</div>
+            </div>
+            <div class="permission-body" style="padding: 12px 14px; color: var(--text-soft); font-size: 12px; line-height: 1.5">
+              ${text || "允许“文档助手”访问你的位置信息吗？位置仅用于打卡。"}
+            </div>
+            <div class="dialog-actions">
+              <button class="btn">不允许</button>
+              <button class="btn btn-primary">允许</button>
+            </div>
+          </div>`,
+        "feature-name": (text) => `
+          <div class="feature-name-demo">
+            <button class="feature-name-chip accent">${text || "消息中心"}</button>
+            <button class="feature-name-chip">收藏夹</button>
+            <button class="feature-name-chip">订单管理</button>
+          </div>`,
+        "feature-intro": (text) => `
+          <div class="feature-intro-demo">
+            <div class="intro-card">
+              <div class="intro-title">功能介绍</div>
+              <div class="intro-summary">${text || "自动保存草稿，意外关闭也不会丢失内容。"}</div>
+              <div style="display:flex; gap:8px">
+                <button class="btn">查看详情</button>
+                <button class="btn btn-primary">开始使用</button>
+              </div>
+            </div>
+          </div>`,
+      };
+
+      const categoryListEl = document.getElementById("categoryList");
+      const composerTitle = document.getElementById("composerTitle");
+      const composerDesc = document.getElementById("composerDesc");
+      const componentBadge = document.getElementById("componentBadge");
+      const mockLabel = document.getElementById("mockLabel");
+      const mockStage = document.getElementById("mockStage");
+      const referencePanel = document.getElementById("referencePanel");
+      const exampleList = document.getElementById("exampleList");
+      const purposeText = document.getElementById("purposeText");
+      const rulesList = document.getElementById("rulesList");
+      const toneList = document.getElementById("toneList");
+      const viewToggle = document.getElementById("viewToggle");
+      const zhPreview = document.getElementById("zhPreview");
+      const enPreview = document.getElementById("enPreview");
+      const resultTabs = document.getElementById("resultTabs");
+      const simulateBtn = document.getElementById("simulateBtn");
+
+      let currentId = "dialog";
+      let viewMode = "preview";
+      let simulated = false;
+
+      function renderList(el, items) {
+        el.innerHTML = items.map((item) => `<li>${item}</li>`).join("");
+      }
+
+      function getPreviewText() {
+        const category = categories.find((item) => item.id === currentId);
+        if (!category) return "";
+        if (simulated) return generated[currentId]?.zh || category.examples[0] || "";
+        return category.examples[0] || "";
+      }
+
+      function renderMock() {
+        const category = categories.find((item) => item.id === currentId);
+        if (!category) return;
+
+        if (viewMode === "text") {
+          mockStage.innerHTML = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%">
+              <div class="language-block">
+                <div class="language-head">模拟标题</div>
+                <div class="language-copy">${category.description}</div>
+              </div>
+              <div class="language-block">
+                <div class="language-head">典型场景</div>
+                <div class="language-copy">${category.purpose}</div>
+              </div>
+            </div>`;
+          return;
+        }
+
+        const renderer = mockRenderers[currentId];
+        const text = getPreviewText();
+        mockStage.innerHTML = renderer ? renderer(text) : "<div>暂无可预览模拟器，请使用参考说明。</div>";
+      }
+
+      function setActiveCategory(id) {
+        currentId = id;
+        const category = categories.find((item) => item.id === id);
+        if (!category) return;
+        composerTitle.textContent = category.label;
+        composerDesc.textContent = category.description;
+        componentBadge.textContent = category.component;
+        exampleList.innerHTML = "";
+        renderList(exampleList, category.examples);
+        rulesList.innerHTML = "";
+        renderList(rulesList, category.rules);
+        toneList.innerHTML = "";
+        renderList(toneList, ["中性客观：专业、中立、客观", "使用事实陈述", "避免过度渲染情绪"]);
+        purposeText.textContent = category.purpose;
+        document.querySelectorAll(".category-button").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.id === id);
+        });
+        mockLabel.textContent = `选中类型 · ${category.label}`;
+        renderMock();
+        updateResultText();
+      }
+
+      function updateResultText() {
+        const pair = generated[currentId] || generated["dialog"];
+        if (simulated) {
+          zhPreview.textContent = pair.zh;
+          enPreview.textContent = pair.en;
+        } else {
+          zhPreview.textContent = categories.find((c) => c.id === currentId)?.examples[0] || pair.zh;
+          enPreview.textContent = pair.en;
+        }
+        renderMock();
+      }
+
+      simulateBtn.addEventListener("click", () => {
+        simulated = !simulated;
+        simulateBtn.textContent = simulated ? "清除模拟结果" : "模拟生成结果";
+        updateResultText();
+        if (simulated) {
+          resultTabs.querySelectorAll(".result-tab")[0].classList.add("active");
+        }
+      });
+
+      resultTabs.querySelectorAll(".result-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          resultTabs.querySelectorAll(".result-tab").forEach((item) => item.classList.remove("active"));
+          tab.classList.add("active");
+        });
+      });
+
+      viewToggle.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          viewMode = button.dataset.view;
+          viewToggle.querySelectorAll("button").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          renderMock();
+        });
+      });
+
+      // Build category list
+      categories.forEach((category) => {
+        const button = document.createElement("button");
+        button.className = "category-button";
+        button.dataset.id = category.id;
+        button.innerHTML = `
+          <span class="category-name">${category.label}</span>
+          <span class="category-meta">${category.component}</span>`;
+        button.addEventListener("click", () => setActiveCategory(category.id));
+        categoryListEl.appendChild(button);
+      });
+
+      // History mock
+      const historyList = document.getElementById("historyList");
+      historyList.innerHTML = `
+        <div class="history-row">
+          <div class="history-type">确认阻断 / Dialog</div>
+          <div class="history-copy">确定要删除该文件吗？删除后无法恢复。</div>
+        </div>
+        <div class="history-row">
+          <div class="history-type">操作反馈 / Toast</div>
+          <div class="history-copy">设置已保存</div>
+        </div>
+        <div class="history-empty">更多历史记录可通过搜索定位。</div>`;
+
+      setActiveCategory("dialog");
+    </script>
+  </body>
+</html>
