@@ -10,7 +10,7 @@ import { OptionPicker } from './components/OptionPicker'
 import { ProviderPanel } from './components/ProviderPanel'
 import { PromptBrief } from './components/PromptBrief'
 import { ResultPanel } from './components/ResultPanel'
-import { TermLibraryPanel, type TermQuery } from './components/TermLibraryPanel'
+import { TermLibraryPanel, type TermQuery, type TermSearchCache } from './components/TermLibraryPanel'
 import { HistoryPanel } from './components/HistoryPanel'
 import { TonePicker } from './components/TonePicker'
 import { ContentSpecPage, type ContentSpecPageHandle, type SpecPositionState } from './components/ContentSpecPage'
@@ -64,6 +64,7 @@ export default function App() {
   const [scenePromptOpen, setScenePromptOpen] = useState(false)
   const [modes, setModes] = useState<string[]>(promptCategories[0].modes ?? [])
   const [termQuery, setTermQuery] = useState<TermQuery>()
+  const [termSearchCache, setTermSearchCache] = useState<TermSearchCache>()
   const [activePanel, setActivePanel] = useState<'result' | 'terms'>('result')
   const [activeView, setActiveView] = useState<'studio' | 'spec'>(getInitialActiveView)
   const [specSearchQuery, setSpecSearchQuery] = useState('')
@@ -185,6 +186,7 @@ export default function App() {
     const zh = scene.trim()
     const en = scene.trim()
     setActivePanel('terms')
+    setTermSearchCache(undefined)
     setTermQuery({ id: Date.now(), zh, en })
   }
 
@@ -296,6 +298,13 @@ export default function App() {
               <span className="textarea-count">{scene.length}</span>
             </div>
 
+            {scenePromptOpen ? (
+              <div className="required-prompt" role="alert">
+                <strong>请填写补充场景或功能描述</strong>
+                <span>该输入为必填项，请先补充场景信息后再生成或查询。</span>
+              </div>
+            ) : null}
+
             <div className="scene-as-chinese-toggle">
               <label className="switch small">
                 <input
@@ -333,13 +342,6 @@ export default function App() {
                     )
                   })}
                 </div>
-              </div>
-            ) : null}
-
-            {scenePromptOpen ? (
-              <div className="required-prompt" role="alert">
-                <strong>请填写补充场景或功能描述</strong>
-                <span>该输入为必填项，请先补充场景信息后再生成或查询。</span>
               </div>
             ) : null}
 
@@ -461,7 +463,12 @@ export default function App() {
           </div>
 
           <div className="panel-tab-content" hidden={activePanel !== 'terms'}>
-            <TermLibraryPanel query={termQuery} onAddReference={handleAddReference} />
+            <TermLibraryPanel
+              query={termQuery}
+              cachedSearch={termSearchCache}
+              onTermSearchStateChange={setTermSearchCache}
+              onAddReference={handleAddReference}
+            />
           </div>
         </div>
         </main>

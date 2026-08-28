@@ -16,6 +16,15 @@ export type TermQuery = {
   en: string
 }
 
+export type TermSearchCache = {
+  queryId: number
+  matches: TermMatch[] | null
+  searching: boolean
+  searchProgress: { done: number; total: number } | null
+  searchCanceled: boolean
+  page: number
+}
+
 const PAGE_SIZE = 10
 
 type PageItem = number | 'prev' | 'next'
@@ -162,9 +171,16 @@ function TermPagination({
 type TermLibraryPanelProps = {
   query?: TermQuery
   onAddReference: (text: string) => void
+  cachedSearch?: TermSearchCache
+  onTermSearchStateChange?: (cache: TermSearchCache) => void
 }
 
-export function TermLibraryPanel({ query, onAddReference }: TermLibraryPanelProps) {
+export function TermLibraryPanel({
+  query,
+  onAddReference,
+  cachedSearch,
+  onTermSearchStateChange,
+}: TermLibraryPanelProps) {
   const [tables, setTables] = useState<TermTable[]>([])
   const [loading, setLoading] = useState(true)
   const [matches, setMatches] = useState<TermMatch[] | null>(null)
@@ -177,7 +193,10 @@ export function TermLibraryPanel({ query, onAddReference }: TermLibraryPanelProp
   const fileInputRef = useRef<HTMLInputElement>(null)
   const managerRef = useRef<HTMLDivElement>(null)
   const searchAbortRef = useRef<AbortController | null>(null)
+  const cachedSearchRef = useRef(cachedSearch)
+  const hydratedQueryRef = useRef<number | null>(null)
   const prefsRef = useRef(loadTermLibraryPrefs())
+  cachedSearchRef.current = cachedSearch
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
@@ -230,6 +249,7 @@ export function TermLibraryPanel({ query, onAddReference }: TermLibraryPanelProp
 
   useEffect(() => {
     searchAbortRef.current?.abort()
+
     if (loading) {
       setSearching(false)
       setSearchProgress(null)
@@ -244,6 +264,19 @@ export function TermLibraryPanel({ query, onAddReference }: TermLibraryPanelProp
       setMatches(null)
       return
     }
+
+    const activeCache = cachedSearchRef.current
+    if (activeCache && activeCache.queryId === query.id && hydratedQueryRef.current !== query.id) {
+      setSearching(activeCache.searching)
+      setSearchProgress(activeCache.searchProgress)
+      setSearchCanceled(activeCache.searchCanceled)
+      setMatches(activeCache.matches)
+      setPage(activeCache.page)
+      hydratedQueryRef.current = query.id
+      return
+    }
+
+    hydratedQueryRef.current = query.id
 
     const controller = new AbortController()
     searchAbortRef.current = controller
@@ -281,6 +314,18 @@ export function TermLibraryPanel({ query, onAddReference }: TermLibraryPanelProp
       controller.abort()
     }
   }, [query, tables, loading])
+
+  useEffect(() => {
+    if (!query || loading) return
+    onTermSearchStateChange?.({
+      queryId: query.id,
+      matches,
+      searching,
+      searchProgress,
+      searchCanceled,
+      page,
+    })
+  }, [query, loading, matches, searching, searchProgress, searchCanceled, page, onTermSearchStateChange])
 
   function persist(prefs: typeof prefsRef.current) {
     prefsRef.current = prefs
