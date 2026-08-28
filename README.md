@@ -4,7 +4,7 @@ This template provides a minimal setup to get React working in Vite with HMR and
 
 ## Packaging
 
-Run `pnpm run package:release` to build and produce a single-file release in `release/tips-studio-<version>.zip`. The packaging script inlines JS/CSS into `index.html`, copies `favicon.svg`, `icons.svg`, and `tm/*.csv`, validates the generated HTML, and then creates the zip.
+Run `pnpm run package:release` to build and produce a single-file release in `release/tips-studio-<version>.zip`. The packaging script inlines JS/CSS into `index.html`, copies `favicon.svg`, `icons.svg`, `tm/*.csv`, and optional `files/*` support assets, validates the generated HTML, and then creates the zip.
 
 Currently, two official plugins are available:
 

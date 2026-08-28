@@ -10,8 +10,8 @@ function buildSystemPrompt(input: GenerateInput) {
     '你是一名资深产品文案专家，专长是编写软件界面和交互中的中英文双语提示词。',
     '输出必须是紧凑、可直接使用的产品文案，不解释、不追加段落。',
     input.modes?.length
-      ? '始终返回以下 JSON 结构：{"zh":"默认中文提示词","en":"默认英文提示词","component":"适用组件","duration":"推荐显示时长，若相关","results":[{"mode":"输出长度名称","zh":"对应中文提示词","en":"对应英文提示词"}],"other":"其他建议、备选文案或说明"}'
-      : '始终返回以下 JSON 结构：{"zh":"默认中文提示词","en":"默认英文提示词","component":"适用组件","duration":"推荐显示时长，若相关"}',
+      ? '始终返回以下 JSON 结构：{"zh":"默认中文提示词","en":"默认英文提示词","component":"适用组件","results":[{"mode":"输出长度名称","zh":"对应中文提示词","en":"对应英文提示词"}],"other":"其他建议、备选文案或说明"}'
+      : '始终返回以下 JSON 结构：{"zh":"默认中文提示词","en":"默认英文提示词","component":"适用组件"}',
     input.modes?.length ? `输出长度要求（可多选）：${input.modes.join('、')}` : '',
     input.modes?.length
       ? '当指定了输出长度时，请在 results 中按每个长度返回对应文案，其他补充内容放入 other 字段。'
@@ -106,7 +106,6 @@ export async function generatePrompt(input: GenerateInput): Promise<GeneratedPro
       zh: overrideZh ?? parsed.zh ?? '',
       en: parsed.en ?? '',
       component: parsed.component ?? input.category.component,
-      duration: parsed.duration,
       tone: input.tone.label,
       category: input.category.label,
       raw: cleaned,
@@ -131,7 +130,6 @@ export async function generatePrompt(input: GenerateInput): Promise<GeneratedPro
       zh: input.useSceneAsChinese ? input.scene.trim() : cleaned,
       en: cleaned,
       component: input.category.component,
-      duration: undefined,
       tone: input.tone.label,
       category: input.category.label,
       raw: cleaned,

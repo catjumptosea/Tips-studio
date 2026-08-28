@@ -5,7 +5,6 @@ export type PromptCategory = {
   description: string
   purpose: string
   component: string
-  duration?: string
   rules: string[]
   examples: string[]
   modes?: string[]
@@ -52,7 +51,6 @@ export type GeneratedPrompt = {
   zh: string
   en: string
   component: string
-  duration?: string
   tone: string
   category: string
   raw: string

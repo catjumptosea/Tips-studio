@@ -58,7 +58,6 @@ export const promptCategories: PromptCategory[] = [
     description: '用户完成操作后的轻量反馈，短暂出现后消失',
     purpose: '告知操作结果，无需打断用户',
     component: 'Toast / Snackbar',
-    duration: '建议 2-4 秒',
     rules: ['控制在 15 字以内，一瞥即懂', '成功用“已+动词”，失败用“失败原因+建议”', '不要带句号，不要用“成功”二字赘述'],
     examples: ['保存成功', '已复制到剪贴板', '网络连接失败，请稍后重试'],
   },

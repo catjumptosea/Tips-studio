@@ -34,6 +34,8 @@ export type SpecRule =
   | {
       title?: string
       text?: string
+      linkText?: string
+      linkHref?: string
       examples?: SpecExample[]
       children?: SpecRule[]
       table?: SpecRuleTable
@@ -422,7 +424,11 @@ export const specSections: SpecSection[] = [
                   },
                 ],
               },
-              '具体使用请参考 1995 年中国标准出版社出版的《标点符号用法》。',
+              {
+                text: '具体使用请参考 1995 年中国标准出版社出版的《标点符号用法》。',
+                linkText: '《标点符号用法》',
+                linkHref: 'https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=22EA6D162E4110E752259661E1A0D0A8&refer=outter',
+              },
             ],
           },
           {

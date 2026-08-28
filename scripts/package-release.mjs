@@ -60,6 +60,11 @@ function copySupportingFiles(releaseTarget) {
   if (existsSync(tmSource)) {
     cpSync(tmSource, join(releaseTarget, 'tm'), { recursive: true })
   }
+
+  const filesSource = join(publicDir, 'files')
+  if (existsSync(filesSource)) {
+    cpSync(filesSource, join(releaseTarget, 'files'), { recursive: true })
+  }
 }
 
 function createZip(version, releaseTarget) {
@@ -68,6 +73,7 @@ function createZip(version, releaseTarget) {
 
   const entries = ['favicon.svg', 'icons.svg', 'index.html']
   if (existsSync(join(releaseTarget, 'tm'))) entries.push('tm')
+  if (existsSync(join(releaseTarget, 'files'))) entries.push('files')
 
   execFileSync('tar', ['-a', '-c', '-f', zipPath, '-C', releaseTarget, ...entries], { stdio: 'inherit' })
   return zipPath

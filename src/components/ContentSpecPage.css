@@ -320,6 +320,13 @@
   font-weight: 700;
 }
 
+.spec-rule-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font: inherit;
+}
+
 .spec-rule-item-text {
   display: block;
   font-weight: 700;

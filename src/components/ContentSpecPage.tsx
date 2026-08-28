@@ -446,6 +446,7 @@ export const ContentSpecPage = forwardRef<ContentSpecPageHandle, ContentSpecPage
           ) : null}
         </aside>
       </div>
+
     </div>
   )
 
@@ -569,16 +570,52 @@ export const ContentSpecPage = forwardRef<ContentSpecPageHandle, ContentSpecPage
       )
     }
 
-    function renderInlineBold(text: string) {
+    function renderInlineTextLink(
+      text: string,
+      linkText: string,
+      linkHref: string,
+    ) {
+      const parts = text.split(linkText)
+      if (parts.length < 2) return text
+      return parts.map((part, partIndex) => {
+        if (partIndex === 0) return part
+        return [
+          <a
+            key={`${linkText}-${partIndex}`}
+            className="spec-rule-link"
+            href={linkHref}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {linkText}
+          </a>,
+          part,
+        ]
+      })
+    }
+
+    function renderInlineBold(
+      text: string,
+      linkText?: string,
+      linkHref?: string,
+    ) {
       const parts = text.split('**')
-      if (parts.length < 2 || parts.length % 2 === 0) return text
-      return parts.map((part, index) =>
-        index % 2 === 1 ? (
+      if (parts.length < 2 || parts.length % 2 === 0) {
+        return linkText && linkHref
+          ? renderInlineTextLink(text, linkText, linkHref)
+          : text
+      }
+      return parts.map((part, index) => {
+        const content =
+          linkText && linkHref && index % 2 === 0
+            ? renderInlineTextLink(part, linkText, linkHref)
+            : part
+        return index % 2 === 1 ? (
           <strong key={`${part}-${index}`}>{part}</strong>
         ) : (
-          part
-        ),
-      )
+          content
+        )
+      })
     }
 
     function renderRuleChildren(children: SpecRule[], keyPrefix: string, depth = 1) {
@@ -590,11 +627,13 @@ export const ContentSpecPage = forwardRef<ContentSpecPageHandle, ContentSpecPage
             const childText = typeof child === 'string' ? child : child.text ?? ''
             const childTitle = typeof child === 'string' ? undefined : child.title
             const childExamples = typeof child === 'string' ? undefined : child.examples
+            const childLinkText = typeof child === 'string' ? undefined : child.linkText
+            const childLinkHref = typeof child === 'string' ? undefined : child.linkHref
 
             return (
               <li key={key} id={key} data-level={level}>
                 {childTitle ? <span className="spec-rule-title">{childTitle}</span> : null}
-                {renderInlineBold(childText)}
+                {renderInlineBold(childText, childLinkText, childLinkHref)}
                 {typeof child !== 'string' && child.table ? renderRuleTable(child.table) : null}
                 {typeof child !== 'string' && child.demoImage ? (
                   <div className="spec-rule-demo">

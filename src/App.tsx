@@ -31,7 +31,7 @@ function getInitialActiveView(): 'studio' | 'spec' {
   const params = new URLSearchParams(window.location.search)
   const fromQuery = params.get('view')
   if (fromQuery === 'studio' || fromQuery === 'spec') return fromQuery
-  return window.localStorage.getItem(activeViewStorageKey) === 'spec' ? 'spec' : 'studio'
+  return 'studio'
 }
 
 function makeId() {

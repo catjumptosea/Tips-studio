@@ -86,7 +86,7 @@ export function Header({
         </div>
         <div>
           <div className="brand-title">
-            Tips Studio <span className="brand-version">v1.8.22</span>
+            Tips Studio <span className="brand-version">v1.8.23</span>
           </div>
           <div className="brand-subtitle">双语产品提示词工作台</div>
         </div>
